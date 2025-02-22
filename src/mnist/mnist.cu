@@ -52,11 +52,14 @@ Minist::Minist(std::string minst_data_path, float learning_rate, float l2,
   rmsprop->regist(fc1->parameters());
   rmsprop->regist(fc2->parameters());
 }
+#include <chrono>
 
 void Minist::train(int epochs, int batch_size)
 {
+  auto total_start = std::chrono::high_resolution_clock::now();
   for (int epoch = 0; epoch < epochs; epoch++)
   {
+    auto start = std::chrono::high_resolution_clock::now();
     int idx = 1;
 
     while (dataset->has_next(true))
@@ -78,10 +81,17 @@ void Minist::train(int epochs, int batch_size)
       }
       ++idx;
     }
-    if (1 == epochs - 1)
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<float> duration = end - start;
+    std::cout << "Epoch " << epoch << " took " << duration.count() << " seconds." << std::endl;
+
+    if (epoch == epochs - 1)
       test(batch_size);
     dataset->reset();
   }
+  auto total_end = std::chrono::high_resolution_clock::now();
+  std::chrono::duration<float> total_duration = total_end - total_start;
+  std::cout << "Total training time: " << total_duration.count() << " seconds." << std::endl;
 }
 
 void Minist::test(int batch_size)
