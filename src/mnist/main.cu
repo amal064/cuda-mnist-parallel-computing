@@ -4,7 +4,7 @@
 #define BATCH_SIZE 128
 #define LEARNING_RATE 0.003
 #define L2 0.0001
-#define EPOCHS 2
+#define EPOCHS 20
 #define BETA 0.99
 
 int main()
