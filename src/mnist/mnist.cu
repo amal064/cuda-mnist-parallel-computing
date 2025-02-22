@@ -1,7 +1,8 @@
 #include <mnist.cuh>
 
 Minist::Minist(std::string minst_data_path, float learning_rate, float l2,
-               float beta) {
+               float beta)
+{
   // init
   dataset.reset(new DataSet(minst_data_path, true));
 
@@ -52,46 +53,53 @@ Minist::Minist(std::string minst_data_path, float learning_rate, float l2,
   rmsprop->regist(fc2->parameters());
 }
 
-void Minist::train(int epochs, int batch_size) {
-  for (int epoch = 0; epoch < epochs; epoch++) {
+void Minist::train(int epochs, int batch_size)
+{
+  for (int epoch = 0; epoch < epochs; epoch++)
+  {
     int idx = 1;
 
-    while (dataset->has_next(true)) {
+    while (dataset->has_next(true))
+    {
       forward(batch_size, true);
       backward();
       rmsprop->step();
 
-      if (idx % 10 == 0) {
+      if (idx % 10 == 0)
+      {
         float loss = this->nll_loss->get_output()->get_data()[0];
         auto acc = top1_accuracy(this->log_softmax->get_output()->get_data(),
                                  10, this->dataset->get_label()->get_data());
 
-        std::cout << "Epoch: " << epoch << ", Batch: " << idx
-                  << ", NLLLoss: " << loss
-                  << ", Train Accuracy: " << (float(acc.first) / acc.second)
-                  << std::endl;
+        // std::cout << "Epoch: " << epoch << ", Batch: " << idx
+        //           << ", NLLLoss: " << loss
+        //           << ", Train Accuracy: " << (float(acc.first) / acc.second)
+        //           << std::endl;
       }
       ++idx;
     }
-
-    test(batch_size);
+    if (1 == epochs - 1)
+      test(batch_size);
     dataset->reset();
   }
 }
 
-void Minist::test(int batch_size) {
+void Minist::test(int batch_size)
+{
   int idx = 1;
   int count = 0;
   int total = 0;
 
-  while (dataset->has_next(false)) {
+  while (dataset->has_next(false))
+  {
     forward(batch_size, false);
     auto acc = top1_accuracy(this->log_softmax->get_output()->get_data(), 10,
                              this->dataset->get_label()->get_data());
-    if (idx % 10 == 0) {
-      std::cout << "Batch: " << idx
-                << ", Test Accuracy: " << (float(acc.first) / acc.second)
-                << std::endl;
+    if (idx % 10 == 0)
+    {
+      // std::cout << "Batch: " << idx
+      //           << ", Test Accuracy: " << (float(acc.first) / acc.second)
+      //           << std::endl;
     }
 
     count += acc.first;
@@ -102,9 +110,10 @@ void Minist::test(int batch_size) {
   std::cout << "Total Accuracy: " << (float(count) / total) << std::endl;
 }
 
-void Minist::forward(int batch_size, bool is_train) {
+void Minist::forward(int batch_size, bool is_train)
+{
   dataset->forward(batch_size, is_train);
-  const Storage* labels = dataset->get_label();
+  const Storage *labels = dataset->get_label();
 
   conv1->forward();
   conv1_relu->forward();
@@ -126,10 +135,12 @@ void Minist::forward(int batch_size, bool is_train) {
 
   log_softmax->forward();
 
-  if (is_train) nll_loss->forward(labels);
+  if (is_train)
+    nll_loss->forward(labels);
 }
 
-void Minist::backward() {
+void Minist::backward()
+{
   nll_loss->backward();
   log_softmax->backward();
 
@@ -154,32 +165,38 @@ void Minist::backward() {
 
 std::pair<int, int> Minist::top1_accuracy(
     const thrust::host_vector<
-        float, thrust::system::cuda::experimental::pinned_allocator<float>>&
+        float, thrust::system::cuda::experimental::pinned_allocator<float>> &
         probs,
     int cls_size,
     const thrust::host_vector<
-        float, thrust::system::cuda::experimental::pinned_allocator<float>>&
-        labels) {
+        float, thrust::system::cuda::experimental::pinned_allocator<float>> &
+        labels)
+{
   int count = 0;
   int size = labels.size() / cls_size;
-  for (int i = 0; i < size; i++) {
+  for (int i = 0; i < size; i++)
+  {
     int max_pos = -1;
     float max_value = -FLT_MAX;
     int max_pos2 = -1;
     float max_value2 = -FLT_MAX;
 
-    for (int j = 0; j < cls_size; j++) {
+    for (int j = 0; j < cls_size; j++)
+    {
       int index = i * cls_size + j;
-      if (probs[index] > max_value) {
+      if (probs[index] > max_value)
+      {
         max_value = probs[index];
         max_pos = j;
       }
-      if (labels[index] > max_value2) {
+      if (labels[index] > max_value2)
+      {
         max_value2 = labels[index];
         max_pos2 = j;
       }
     }
-    if (max_pos == max_pos2) ++count;
+    if (max_pos == max_pos2)
+      ++count;
   }
   return {count, size};
 }

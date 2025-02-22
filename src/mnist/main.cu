@@ -4,10 +4,11 @@
 #define BATCH_SIZE 128
 #define LEARNING_RATE 0.003
 #define L2 0.0001
-#define EPOCHS 30
+#define EPOCHS 2
 #define BETA 0.99
 
-int main() {
+int main()
+{
   // DataSet dataset("./mnist_data", true);
   // dataset.forward(64, true);
   // dataset.print_im();
