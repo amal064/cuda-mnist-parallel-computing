@@ -1,0 +1,23 @@
+Running CUDA code:
+
+Prerequisites:
+Docker
+nvidia-container-toolkit
+
+1) Build docker image using the following command:
+
+docker buildx build --no-cache -t cuda-mnist .
+
+2) Run the container using the following command:
+
+docker run -it --rm --runtime=nvidia --gpus=all cuda-mnist:latest 
+
+3) Once container is running type ./mnist in the terminal.
+
+
+Running PyTorch code:
+
+Prerequisites:
+PyTorch
+
+1) Run pyt.ipynb
