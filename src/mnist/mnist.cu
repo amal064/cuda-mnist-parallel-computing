@@ -68,7 +68,7 @@ void Minist::train(int epochs, int batch_size)
       backward();
       rmsprop->step();
 
-      if (idx % 128 == 0)
+      if (idx % 384 == 0)
       {
         float loss = this->nll_loss->get_output()->get_data()[0];
         auto acc = top1_accuracy(this->log_softmax->get_output()->get_data(),
