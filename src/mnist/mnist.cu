@@ -68,16 +68,16 @@ void Minist::train(int epochs, int batch_size)
       backward();
       rmsprop->step();
 
-      if (idx % 10 == 0)
+      if (idx % 128 == 0)
       {
         float loss = this->nll_loss->get_output()->get_data()[0];
         auto acc = top1_accuracy(this->log_softmax->get_output()->get_data(),
                                  10, this->dataset->get_label()->get_data());
 
-        // std::cout << "Epoch: " << epoch << ", Batch: " << idx
-        //           << ", NLLLoss: " << loss
-        //           << ", Train Accuracy: " << (float(acc.first) / acc.second)
-        //           << std::endl;
+        std::cout << "Epoch: " << epoch << ", Batch: " << idx
+                  << ", NLLLoss: " << loss
+                  << ", Train Accuracy: " << (float(acc.first) / acc.second)
+                  << std::endl;
       }
       ++idx;
     }
@@ -85,8 +85,8 @@ void Minist::train(int epochs, int batch_size)
     std::chrono::duration<float> duration = end - start;
     std::cout << "Epoch " << epoch << " took " << duration.count() << " seconds." << std::endl;
 
-    if (epoch == epochs - 1)
-      test(batch_size);
+    std::cout << "Epoch " << epoch << " ";
+    test(batch_size);
     dataset->reset();
   }
   auto total_end = std::chrono::high_resolution_clock::now();
